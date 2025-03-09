@@ -1,6 +1,7 @@
 package com.samarth.student.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.samarth.student.rowMapper.StudentRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,14 @@ public class StudentDaoImp implements StudentDao {
 	}
 
 	@Override
-	public Student getStudentById(int id) {
+	public Optional<Student> getStudentById(int id) {
 		String sql  = "Select * from student where id = ?";
 		//QueryForObject used because query returns a list and we want only 1 object here. what other methods are there?
-		return jdbctemplate.queryForObject(sql, new StudentRowMapper(), id);
+		//Also use optional for handling null cases
+		List<Student> student = jdbctemplate.query(sql, new StudentRowMapper(), id);
+		
+		return student.stream().findFirst();
+//		return Optional.ofNullable(jdbctemplate.queryForObject(sql, new StudentRowMapper(), id));
 	}
 
 	@Override
